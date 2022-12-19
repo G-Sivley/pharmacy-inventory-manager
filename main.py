@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, abort
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -30,29 +30,41 @@ def home():
 
 # Todo: Make add drug function
 
+# Add drug to database
 # Todo: Add checking to ensure not adding same drug
 @app.route("/add-drug", methods=["POST"])
 def add_drug():
-    if request.method == "POST":
-        name = request.args["drug_name"]
-        measure = request.args["measure"]
-        unit = request.args["unit"]
-        count = int(request.args["count"])
-        
-        new_drug = Drug(
-            name=name,
-            measure=measure,
-            unit=unit,
-            count=count
-        )
+    name = request.args["drug_name"]
+    measure = request.args["measure"]
+    unit = request.args["unit"]
+    count = int(request.args["count"])
+    
+    new_drug = Drug(
+        name=name,
+        measure=measure,
+        unit=unit,
+        count=count
+    )
 
-        db.session.add(new_drug)
-        db.session.commit()
+    db.session.add(new_drug)
+    db.session.commit()
 
-    return jsonify({"Request completed successfully": 0})
+    return jsonify({"Request completed successfully": 200})
     
 
-# TODO: Make remove drug function
+# Make remove drug function
+@app.route("/remove-drug/<int:drug_id>", methods=["GET", "POST"])
+def remove_drug(drug_id):
+    drug_to_remove = Drug.query.filter_by(id=drug_id).first()
+
+    # Check if drug id exists in the database
+    if not drug_to_remove:
+        return abort(406, "Drug ID not available to delete")
+
+    # Delete drug if it exists
+    db.session.delete(drug_to_remove)
+    db.session.commit()
+    return jsonify("Drug deleted successfully"), 200
 
 # TODO: Make add quantity drug function
 
