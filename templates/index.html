@@ -1,0 +1,17 @@
+{% include "header.html" %}
+
+  <!-- Page Header -->
+ 
+
+  <!-- Main Content -->
+  <div class="container pt-5">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+      {% for drug in drugs: %} 
+      <p>{{ drug.drug_long_name() }}</p>
+      {% endfor %}
+      </div>
+    </div>
+  </div>
+
+{% include "footer.html" %}
