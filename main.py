@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, abort
+from flask import Flask, request, jsonify, abort, render_template, redirect
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -16,6 +16,10 @@ class Drug(db.Model):
     measure = db.Column(db.String(50), unique=False)
     unit = db.Column(db.String(25), unique=False)
     count = db.Column(db.Integer)
+    
+    def drug_long_name(self):
+        return f"{self.name} {self.measure} {self.unit}: {self.count}"
+    
 
     # TODO: Check that count is >= 0
     
@@ -24,18 +28,19 @@ with app.app_context():
 
 #TODO: Make drug handling function
 
-def drug_long_name(drug: Drug):
-    return f"{drug.name} {drug.measure} {drug.unit}"
     
 
 # Function to find drug in database by ID
 def find_drug_by_id(id):
     return Drug.query.filter_by(id=id).first()
 
+def return_all_drugs():
+    return Drug.query.all()
 
 @app.route("/")
-def home():
-    return {"data": 0}
+def get_all_drugs():
+    drugs = return_all_drugs()
+    return render_template("index.html", drugs=drugs)
 
 
 # Add drug to database
@@ -99,7 +104,7 @@ def change_quantity(drug_id):
     # Change and update information
     drug_to_change.count += count
     db.session.commit()
-    return jsonify({f"{drug_long_name(drug_to_change)} count changed to": drug_to_change.count}), 200
+    return jsonify({f"{drug_to_change.drug_long_name()} count changed to": drug_to_change.count}), 200
 
 
 
