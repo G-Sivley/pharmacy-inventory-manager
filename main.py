@@ -22,13 +22,21 @@ class Drug(db.Model):
 with app.app_context():
     db.create_all()
 
+#TODO: Make drug handling function
+
+def drug_long_name(drug: Drug):
+    return f"{drug.name} {drug.measure} {drug.unit}"
+    
+
+# Function to find drug in database by ID
+def find_drug_by_id(id):
+    return Drug.query.filter_by(id=id).first()
+
 
 @app.route("/")
 def home():
     return {"data": 0}
 
-
-# Todo: Make add drug function
 
 # Add drug to database
 # Todo: Add checking to ensure not adding same drug
@@ -55,7 +63,7 @@ def add_drug():
 # Make remove drug function
 @app.route("/remove-drug/<int:drug_id>", methods=["GET", "POST"])
 def remove_drug(drug_id):
-    drug_to_remove = Drug.query.filter_by(id=drug_id).first()
+    drug_to_remove = find_drug_by_id(drug_id)
 
     # Check if drug id exists in the database
     if not drug_to_remove:
@@ -66,10 +74,32 @@ def remove_drug(drug_id):
     db.session.commit()
     return jsonify("Drug deleted successfully"), 200
 
-# TODO: Make add quantity drug function
+# Make add and subtract drug functionality
+@app.route("/change-quantity/<int:drug_id>", methods=["POST"])
+def change_quantity(drug_id):
+    drug_to_change = find_drug_by_id(drug_id)
 
-# TODO: Make remove quantity function
+    # Operation must be "add" or "subtract"
+    operation = request.args["operation"]
+    print(operation)
+    count = int(request.args["count"])
 
+    # Check if drug id exists in database
+    if not drug_to_change:
+        return abort(406, "Drug ID not available to change")
+
+    # If operation is not add or subtract, provide error
+    if operation != "add" and operation != "subtract":
+        return abort(406, "Operation is not correct")
+
+    elif operation == "subtract":
+        #TODO: Check if drug available to remove
+        count *= -1
+
+    # Change and update information
+    drug_to_change.count += count
+    db.session.commit()
+    return jsonify({f"{drug_long_name(drug_to_change)} count changed to": drug_to_change.count}), 200
 
 
 
