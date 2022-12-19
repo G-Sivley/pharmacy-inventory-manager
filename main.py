@@ -43,6 +43,10 @@ def get_all_drugs():
     return render_template("index.html", drugs=drugs)
 
 
+@app.route("/login")
+def login():
+    return render_template("login.html")
+
 # Add drug to database
 # Todo: Add checking to ensure not adding same drug
 @app.route("/add-drug", methods=["POST"])

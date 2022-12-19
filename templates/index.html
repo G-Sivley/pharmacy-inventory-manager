@@ -1,17 +1,33 @@
 {% include "header.html" %}
 
-  <!-- Page Header -->
- 
+<!-- Page Header -->
 
-  <!-- Main Content -->
-  <div class="container pt-5">
-    <div class="row">
-      <div class="col-lg-8 col-md-10 mx-auto">
-      {% for drug in drugs: %} 
-      <p>{{ drug.drug_long_name() }}</p>
-      {% endfor %}
-      </div>
-    </div>
+<!-- Main Content -->
+<div class="container pt-2">
+  <div class="row">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Drug name</th>
+          <th scope="col">Strength</th>
+          <th scope="col">Count</th>
+          <th scope="col">Edit Count</th>
+          <th scope="col">Delete Drug</th>
+        </tr>
+      </thead>
+      {% for drug in drugs: %}
+      <tbody>
+        <tr>
+          <td scope="row">{{ drug.name }}</td>
+          <td>{{ drug.measure }}{{ drug.unit }}</td>
+          <td>{{ drug.count }}</td>
+          <td><a href="#">edit drug</a></td>
+          <td><a href="#">remove drug</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
+</div>
 
 {% include "footer.html" %}
